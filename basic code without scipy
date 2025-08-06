@@ -12,13 +12,14 @@ def bi_awgn_channel(encoded_data, snr_db, code_rate):
     """
     Simulates a BI-AWGN channel.
     Converts bits to BPSK symbols (0 -> 1, 1 -> -1), adds Gaussian noise,
-    and returns the noisay signal.
+    and returns the noisy signal.
     """
     # Convert bits to BPSK symbols
     signal = 1 - 2 * encoded_data
     # Calculate linear SNR from dB
     snr_linear = 10**(snr_db / 10.0)
     # Calculate noise variance based on code rate and SNR
+    # 신호 에너지를 1로 정규화했을 때, 잡음 분산은 1/(2 * R * Eb/N0)
     noise_variance = 1 / (2 * code_rate * snr_linear)
     # Generate Gaussian noise
     noise = np.sqrt(noise_variance) * np.random.randn(len(signal))
@@ -39,12 +40,41 @@ def repetition_decoder(received_signal):
     decoded_data = (summed_signal <= 0).astype(int)
     return decoded_data
 
+def simulate_uncoded_bpsk_ber(snr_db_range, num_bits):
+    """
+    Simulates uncoded BPSK to get BER results for a range of SNRs.
+    This function uses only NumPy.
+    """
+    ber_results = []
+    code_rate = 1.0 # Code rate is 1 for uncoded
+    
+    print("\nRunning Uncoded BPSK simulation for comparison...")
+    for snr_db in snr_db_range:
+        source_bits = np.random.randint(0, 2, num_bits)
+        signal = 1 - 2 * source_bits
+        
+        snr_linear = 10**(snr_db / 10.0)
+        noise_variance = 1 / (2 * code_rate * snr_linear)
+        noise = np.sqrt(noise_variance) * np.random.randn(len(signal))
+        received_signal = signal + noise
+        
+        decoded_bits = (received_signal <= 0).astype(int)
+        
+        num_errors = np.sum(source_bits != decoded_bits)
+        ber = num_errors / num_bits
+        ber_results.append(ber)
+        # 시뮬레이션 진행 상황을 보기 위한 print문 (선택사항)
+        # print(f"Uncoded - SNR: {snr_db} dB, BER: {ber:.6f}")
+        
+    return ber_results
+
 def main():
     """
     Main function to run the simulation and plot the results.
     """
     # --- Simulation Parameters ---
-    info_bits_len = 10000  # Number of information bits to transmit
+    # 시뮬레이션 정확도를 위해 비트 수를 늘립니다.
+    info_bits_len = 100000 
     snr_db_range = np.arange(0, 10, 1) # SNR range in dB
     
     # The rate of our code is 1/3 since we send 3 bits for every 1 info bit
@@ -53,7 +83,7 @@ def main():
     # Array to store Bit Error Rate results
     ber_results = []
 
-    print("Running simulation...")
+    print("Running 3-Repetition Code simulation...")
     # --- Run Simulation for each SNR value ---
     for snr_db in snr_db_range:
         # Generate random source data
@@ -74,20 +104,20 @@ def main():
         # 5. Calculate the Bit Error Rate (BER)
         ber = num_errors / info_bits_len
         ber_results.append(ber)
-        print(f"SNR: {snr_db} dB, BER: {ber:.6f}")
+        print(f"Repetition Code - SNR: {snr_db} dB, BER: {ber:.6f}")
+
+    # --- Uncoded BPSK Simulation (NumPy only) ---
+    ber_uncoded_simulated = simulate_uncoded_bpsk_ber(snr_db_range, info_bits_len)
 
     # --- Plotting the Results ---
     plt.figure(figsize=(10, 7))
-    plt.semilogy(snr_db_range, ber_results, marker='o', linestyle='-', label='3-Repetition Code')
+    plt.semilogy(snr_db_range, ber_results, marker='o', linestyle='-', label='3-Repetition Code (Simulated)')
     
-    # Optional: Plot theoretical uncoded BPSK for comparison
-    from scipy.special import erfc
-    snr_linear_range = 10**(snr_db_range / 10.0)
-    ber_uncoded_theoretical = 0.5 * erfc(np.sqrt(snr_linear_range))
-    plt.semilogy(snr_db_range, ber_uncoded_theoretical, marker='x', linestyle='--', label='Uncoded BPSK (Theoretical)')
+    # Plot simulated uncoded BPSK for comparison
+    plt.semilogy(snr_db_range, ber_uncoded_simulated, marker='x', linestyle='--', label='Uncoded BPSK (Simulated)')
 
-    plt.title('BER Performance of 3-Repetition Code in BI-AWGN Channel')
-    plt.xlabel('SNR (dB)')
+    plt.title('BER Performance of 3-Repetition Code vs Uncoded BPSK')
+    plt.xlabel('$E_b/N_0$ (dB)')
     plt.ylabel('Bit Error Rate (BER)')
     plt.legend()
     plt.grid(True, which="both")
@@ -95,6 +125,4 @@ def main():
     plt.show()
 
 if __name__ == '__main__':
-    # You might need to install scipy for the theoretical curve: pip install scipy
-    # If you don't have it, you can comment out the theoretical plot lines.
     main()
