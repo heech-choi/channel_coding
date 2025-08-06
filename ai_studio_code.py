@@ -94,7 +94,5 @@ def main():
     plt.ylim(1e-5, 1.0)
     plt.show()
 
-if __name__ == '__main__':
-    # You might need to install scipy for the theoretical curve: pip install scipy
-    # If you don't have it, you can comment out the theoretical plot lines.
-    main()
+
+main()

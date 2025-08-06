@@ -6,7 +6,7 @@ def repetition_encoder(data):
     Encodes data by repeating each bit 3 times.
     Example: [1, 0] -> [1, 1, 1, 0, 0, 0]
     """
-    return np.repeat(data, 3)
+    return np.repeat(data, 5)
 
 def bi_awgn_channel(encoded_data, snr_db, code_rate):
     """
@@ -33,7 +33,7 @@ def repetition_decoder(received_signal):
     Sum > 0 -> 0, Sum <= 0 -> 1 (since 0 is mapped to +1 and 1 to -1)
     """
     # Reshape the signal into chunks of 3
-    reshaped_signal = received_signal.reshape(-1, 3)
+    reshaped_signal = received_signal.reshape(-1, 5)
     # Sum each chunk
     summed_signal = np.sum(reshaped_signal, axis=1)
     # Majority vote: if sum > 0, it's likely a 0 (mapped to +1). Otherwise, it's a 1.
@@ -78,7 +78,7 @@ def main():
     snr_db_range = np.arange(0, 10, 1) # SNR range in dB
     
     # The rate of our code is 1/3 since we send 3 bits for every 1 info bit
-    code_rate = 1/3
+    code_rate = 1/5
     
     # Array to store Bit Error Rate results
     ber_results = []
