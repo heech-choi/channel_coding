@@ -9,7 +9,7 @@ def ber_curve_awgn(code, ebn0_db_list, n_bits=10000, seed: int = None) -> Tuple[
     """
     if seed is not None:
         np.random.seed(seed)
-    from ..channels.awgn import bpsk_mod, hard_demod
+    from channels.awgn import bpsk_mod, hard_demod
 
     ber = []
     ebn0_db_arr = np.array(list(ebn0_db_list), dtype=float)
@@ -27,7 +27,7 @@ def ber_curve_awgn(code, ebn0_db_list, n_bits=10000, seed: int = None) -> Tuple[
 def ber_curve_bsc(code, p_list, n_bits=10000, seed: int = None):
     if seed is not None:
         np.random.seed(seed)
-    from ..channels.bsc import transmit
+    from channels.bsc import transmit
 
     ber = []
     p_arr = np.array(list(p_list), dtype=float)
