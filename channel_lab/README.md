@@ -33,3 +33,8 @@ python cli.py --code rep --n 5 --channel bsc --bsc_p_start 0 --bsc_p_stop 0.2 --
 class MyCode(BaseCode):
     ...
 ```
+
+## Pyinstaller -> exe file
+py -m PyInstaller -F -w -n ChannelLabGUI channel_lab/gui/app.py ^
+  --collect-submodules matplotlib ^
+  --collect-data matplotlib
