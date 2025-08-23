@@ -14,13 +14,13 @@ class RepetitionCode(BaseCode):
         return 1.0 / self.n
 
     def encode(self, bits: np.ndarray) -> np.ndarray:
-        return np.repeat(bits.astype(np.uint8), self.n)
+        return np.repeat(bits.astype(np.uint8), self.n) #np.unit8 uses 1byte - the cheapest. int takes 24+ bytes.
 
-    def decode(self, received: np.ndarray, **kwargs) -> np.ndarray:
+    def decode(self, received: np.ndarray, **kwargs) -> np.ndarray: #**kwargs is 'keyword arguments', where ** accepts any number of extra named arguments and bundle them into a dictionary.
         # majority vote over each n-block
         n = self.n
         assert received.size % n == 0, "length not divisible by n"
         blocks = received.reshape(-1, n)
         sums = np.sum(blocks, axis=1)
-        hard = (sums >= (n//2 + 1)).astype(np.uint8)
+        hard = (sums >= (n//2 + 1)).astype(np.uint8) #sum-decoding would be misled by some huge outlier - e.g. -10, 2, 1 
         return hard
