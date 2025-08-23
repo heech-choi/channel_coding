@@ -19,5 +19,5 @@ def bpsk_mod(bits: np.ndarray, ebn0_db: float, rate: float):
     y = x + noise
     return y
 
-def hard_demod(y: np.ndarray) -> np.ndarray:
+def hard_demod(y: np.ndarray) -> np.ndarray: # -> is a kind notice that the result will have that type. small comment, not affecting runtime performance
     return (y < 0).astype(np.uint8)
