@@ -1,4 +1,3 @@
-
 # Channel Lab (Python) — Minimal Dependencies
 
 **Purpose:** Modular platform to test channel codes over AWGN/BSC, plot BER, with both GUI (tkinter) and CLI.

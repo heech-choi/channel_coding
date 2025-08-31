@@ -1,6 +1,6 @@
 
 import numpy as np
-from typing import Callable, Dict, Any, Tuple #typing is a built-in library
+from typing import Callable, Dict, Any, Tuple #typing is a built-in Python library
 
 def ber_curve_awgn(code, ebn0_db_list, n_bits=10000, seed: int = None) -> Tuple[np.ndarray, np.ndarray]:
     """
