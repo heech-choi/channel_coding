@@ -8,9 +8,10 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from codes.uncoded import Uncoded
 from codes.repetition import RepetitionCode
+from codes.ldpc import LDPCCode
 from simulation.ber import ber_curve_awgn, ber_curve_bsc
 
-CODE_CHOICES = ["uncoded", "rep"]
+CODE_CHOICES = ["uncoded", "rep", "LDPC"]
 CHANNEL_CHOICES = ["bi-awgn", "bsc", "bec"]
 
 # Get the code instance with its methods
@@ -19,6 +20,8 @@ def make_code(name: str, n: int):
         return Uncoded()
     elif name == "rep":
         return RepetitionCode(n=n)
+    elif name == "LDPC":
+        return LDPCCode()
     else:
         raise ValueError("Unknown code")
 
@@ -30,7 +33,7 @@ class App(tk.Tk):
 
         # Maximum N lines can stay  
         self.lines = []      # list of (line_artist, label)
-        self.max_lines = 10
+        self.max_lines = 30
         self.run_idx = 1     # for labeling: Run 1, Run 2, ...
 
         # Controls
@@ -96,8 +99,9 @@ class App(tk.Tk):
         ttk.Button(btn_row, text="Erase Plot", command=self.erase_plot).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
         ## Figure/axes
-        self.fig = plt.Figure(figsize=(6.4, 5.0), dpi=100)
+        self.fig = plt.Figure(figsize=(6.4, 5.0), dpi=100, constrained_layout=True) #constrained_layout=True to make shure the legend box is contained inside the window
         self.ax = self.fig.add_subplot(111)
+        # self.fig.subplots_adjust(right=0.78) #activate this line to keep legends box outside
         self.ax.set_yscale("log")
         self.ax.set_xlabel("Eb/N0 (dB) or p")
         self.ax.set_ylabel("BER")
@@ -148,7 +152,7 @@ class App(tk.Tk):
             ## generating code instance
             code = make_code(code_name, n=n)
 
-            if ch == "bi-awgn":
+            if ch == "bi-awgn": ### Branch: channel (bi-awgn, bsc)
                 xs = np.linspace(float(self.ebn0_start.get()),
                                  float(self.ebn0_stop.get()),
                                  int(self.ebn0_points.get()))
@@ -172,7 +176,7 @@ class App(tk.Tk):
             self.ax.set_ylabel("BER")
             self.ax.grid(True, which="both")
             self.ax.set_title("Channel Coding BER")
-            self.ax.legend(loc="best")
+            self.ax.legend(loc="center left", bbox_to_anchor=(1,0.5))  #loc="best" to keep legend box inside the plot
             self.run_idx += 1
 
             self.canvas.draw()
