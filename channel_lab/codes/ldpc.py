@@ -1,13 +1,13 @@
 
 import numpy as np
 from .base import BaseCode
-from utilities.util import parse_h_matrix
+# from utilities.log import parse_h_matrix
 
 class LDPCCode(BaseCode):
     def __init__(self, n: int = 3):
         assert n >= 1 and n % 2 == 1, "n must be an odd integer >= 1"
         self.n = n
-        H_matrix = parse_h_matrix(input("H-matrix: "))
+        # H_matrix = parse_h_matrix(input("H-matrix: "))
         print(bits)
 
     def name(self):
@@ -28,4 +28,4 @@ class LDPCCode(BaseCode):
         hard = (sums >= (n//2 + 1)).astype(np.uint8) #sum-decoding here would yield different results than majority vote at huge outlier - e.g. -10, 2, 1 
         return hard
 
-def bit_flipping_decoding(bits:np.ndarray, h_matrix:np.ndarray):
+# def bit_flipping_decoding(bits:np.ndarray, h_matrix:np.ndarray):
